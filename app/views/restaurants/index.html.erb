@@ -1,16 +1,35 @@
-<p style="color: green"><%= notice %></p>
-
-<% content_for :title, "Restaurants" %>
-
 <h1>Restaurants</h1>
 
-<div id="restaurants">
-  <% @restaurants.each do |restaurant| %>
-    <%= render restaurant %>
-    <p>
-      <%= link_to "Show this restaurant", restaurant %>
-    </p>
-  <% end %>
+<%= link_to "New restaurant", new_restaurant_path, class: "btn btn-primary mb-3" %>
+
+<!-- new map -->
+<div class="mb-4">
+  <%= render 'map' %>
 </div>
 
-<%= link_to "New restaurant", new_restaurant_path %>
+<!-- the list of resteraunts will have the following parametres -->
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Cuisine</th>
+      <th>Address</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @restaurants.each do |restaurant| %>
+      <tr>
+        <td><%= restaurant.name %></td>
+        <td><%= restaurant.cuisine %></td>
+        <td><%= restaurant.address %></td>
+        <td>
+          <%= link_to "Show", restaurant, class: "btn btn-sm btn-info" %>
+          <%= link_to "Edit", edit_restaurant_path(restaurant), class: "btn btn-sm btn-warning" %>
+          <%= link_to "Delete", restaurant, method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

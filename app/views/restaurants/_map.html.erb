@@ -1,0 +1,62 @@
+# creating map with google map api whcih will show the user added/saved resteraunt data
+
+<div id="map" style="height: 500px; width: 100%;"></div>
+
+<script>
+  let map;
+
+  function initMap() {
+    const center = { lat: 53.3498, lng: -6.2603 }; # these coordinates are for dublin city center
+    
+    map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 13,
+      center: center
+    });
+
+    // Add markers for all restaurants
+    const restaurants = <%= raw @restaurants.map { |r| 
+      { 
+        name: r.name, 
+        lat: r.latitude, 
+        lng: r.longitude,
+        address: r.address
+      } 
+    }.to_json %>;
+
+    restaurants.forEach(restaurant => {
+      if (restaurant.lat && restaurant.lng) {
+        const marker = new google.maps.Marker({
+          position: { lat: restaurant.lat, lng: restaurant.lng },
+          map: map,
+          title: restaurant.name
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: `<div><strong>${restaurant.name}</strong><br>${restaurant.address}</div>`
+        });
+
+        marker.addListener('click', () => {
+          infoWindow.open(map, marker);
+        });
+      }
+    });
+
+    // Auto-center map to show all markers
+    if (restaurants.length > 0) {
+      const bounds = new google.maps.LatLngBounds();
+      restaurants.forEach(restaurant => {
+        if (restaurant.lat && restaurant.lng) {
+          bounds.extend({ lat: restaurant.lat, lng: restaurant.lng });
+        }
+      });
+      map.fitBounds(bounds);
+    }
+  }
+
+  window.initMap = initMap;
+</script>
+
+#hidden my api key for google maps inside my rails credentials
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.dig(:google_maps, :api_key) %>&callback=initMap">
+</script>

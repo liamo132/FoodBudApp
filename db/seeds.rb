@@ -3,13 +3,13 @@
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 #
 
-#Im adding 10 of my fav restaurants to get us started and to see if resteraunts load correctly with
+# Im adding 10 of my fav restaurants to get us started and to see if resteraunts load correctly with
 # the gem 'geocoder' that I have added for location based searching functioning
 
-#clearing any existing data
+# clearing any existing data
 Restaurant.destroy_all
 
-#some of the resteraints and the street they are on/webiste
+# some of the resteraints and the street they are on/webiste
 
 restaurants = [
   {
