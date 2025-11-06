@@ -32,18 +32,13 @@
   </div>
 
   <div>
-    <%= form.label :latitude, style: "display: block" %>
-    <%= form.text_field :latitude %>
-  </div>
-
-  <div>
-    <%= form.label :longitude, style: "display: block" %>
-    <%= form.text_field :longitude %>
-  </div>
-
-  <div>
     <%= form.label :user_added, style: "display: block" %>
     <%= form.checkbox :user_added %>
+  </div>
+
+  <div class="mb-3 form-check">
+    <%= form.check_box :user_added, class: "form-check-input" %>
+    <%= form.label :user_added, "Mark as User Added", class: "form-check-label" %>
   </div>
 
   <div>

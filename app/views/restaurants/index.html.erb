@@ -1,35 +1,97 @@
-<h1>Restaurants</h1>
+<h1>FoodBud - Restaurant Finder</h1>
 
 <%= link_to "New restaurant", new_restaurant_path, class: "btn btn-primary mb-3" %>
 
-<!-- new map -->
-<div class="mb-4">
-  <%= render 'map' %>
-</div>
+<!-- Simple Tabs -->
+<ul class="nav nav-tabs mb-3" id="restaurantTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
+      All Restaurants (<%= @restaurants.count %>)
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="user-added-tab" data-bs-toggle="tab" data-bs-target="#user-added" type="button" role="tab">
+      User Added (<%= @restaurants.where(user_added: true).count %>)
+    </button>
+  </li>
+</ul>
 
-<!-- the list of resteraunts will have the following parametres -->
+<!-- Tab Content -->
+<div class="tab-content" id="restaurantTabContent">
+  <!-- All Restaurants Tab -->
+  <div class="tab-pane fade show active" id="all" role="tabpanel">
+    <!-- Map -->
+    <div class="mb-4">
+      <%= render 'map' %>
+    </div>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Cuisine</th>
-      <th>Address</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @restaurants.each do |restaurant| %>
-      <tr>
-        <td><%= restaurant.name %></td>
-        <td><%= restaurant.cuisine %></td>
-        <td><%= restaurant.address %></td>
-        <td>
-          <%= link_to "Show", restaurant, class: "btn btn-sm btn-info" %>
-          <%= link_to "Edit", edit_restaurant_path(restaurant), class: "btn btn-sm btn-warning" %>
-          <%= link_to "Delete", restaurant, method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
-        </td>
-      </tr>
+    <!-- Restaurant Table -->
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Cuisine</th>
+          <th>Address</th>
+          <th>Type</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @restaurants.each do |restaurant| %>
+          <tr>
+            <td><%= restaurant.name %></td>
+            <td><%= restaurant.cuisine %></td>
+            <td><%= restaurant.address %></td>
+            <td>
+              <% if restaurant.user_added %>
+                <span class="badge bg-success">User Added</span>
+              <% else %>
+                <span class="badge bg-primary">Database</span>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to "Show", restaurant, class: "btn btn-sm btn-info" %>
+              <%= link_to "Edit", edit_restaurant_path(restaurant), class: "btn btn-sm btn-warning" %>
+              <%= link_to "Delete", restaurant, method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- this tab will show user added restaurants -->
+  <div class="tab-pane fade" id="user-added" role="tabpanel">
+    <% user_added = @restaurants.where(user_added: true) %>
+    <% if user_added.any? %>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Cuisine</th>
+            <th>Address</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% user_added.each do |restaurant| %>
+            <tr>
+              <td><%= restaurant.name %></td>
+              <td><%= restaurant.cuisine %></td>
+              <td><%= restaurant.address %></td>
+              <td>
+                <%= link_to "Show", restaurant, class: "btn btn-sm btn-info" %>
+                <%= link_to "Edit", edit_restaurant_path(restaurant), class: "btn btn-sm btn-warning" %>
+                <%= link_to "Delete", restaurant, method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="alert alert-info">
+        No user-added restaurants yet. Click "New restaurant" and check the "User added" box to add your own!
+      </div>
     <% end %>
-  </tbody>
-</table>
+  </div>
+</div>
