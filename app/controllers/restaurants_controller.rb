@@ -57,6 +57,37 @@ class RestaurantsController < ApplicationController
     end
   end
 
+    # Search action - filters restaurants by keyword and radius
+  def search
+    # Start with all restaurants
+    @restaurants = Restaurant.all
+    
+    # Filter by keyword if provided
+    # Searches in both cuisine and name fields (case-insensitive)
+    if params[:keyword].present?
+      keyword = params[:keyword].downcase  # Convert to lowercase for case-insensitive search
+      @restaurants = @restaurants.where(
+        "LOWER(cuisine) LIKE ? OR LOWER(name) LIKE ?",  # SQL LOWER() for case-insensitive
+        "%#{keyword}%",  # % wildcards mean "contains" (e.g., "piz" matches "pizza")
+        "%#{keyword}%"
+      )
+    end
+    
+    # Filter by radius if user location coordinates are provided
+    if params[:latitude].present? && params[:longitude].present?
+      latitude = params[:latitude].to_f   # Convert string to float
+      longitude = params[:longitude].to_f
+      radius = params[:radius] || 25      # Default to 25km if not specified
+      
+      # Geocoder's 'near' method finds restaurants within X km of coordinates
+      # Uses Haversine formula to calculate distances on Earth's surface
+      @restaurants = @restaurants.near([latitude, longitude], radius, units: :km)
+    end
+    
+    # Render the index view (reuse the same template)
+    render :index
+  end
+  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_restaurant

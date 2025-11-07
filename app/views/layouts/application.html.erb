@@ -6,7 +6,6 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     
-    <!-- adding bootstrap for styling  -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
@@ -16,6 +15,38 @@
   </head>
 
   <body>
+    <!-- Navigation bar with search -->
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <%= link_to "🍽️ FoodBud", root_path, class: "navbar-brand" %>
+        
+        <!-- Search form -->
+        <%= form_with url: search_restaurants_path, method: :get, class: "d-flex", role: "search" do |f| %>
+          <!-- Keyword input field -->
+          <%= f.text_field :keyword, 
+              placeholder: "Search cuisine (e.g., burger, pizza)", 
+              class: "form-control me-2",
+              value: params[:keyword] %>  <%# Keep search term visible after search %>
+          
+          <!-- Radius dropdown selector -->
+          <%= f.select :radius, 
+              options_for_select([
+                ['5 km', 5],
+                ['10 km', 10],
+                ['15 km', 15],
+                ['25 km', 25]
+              ], params[:radius] || 25), 
+              {},
+              class: "form-select me-2",
+              style: "max-width: 120px;" %>
+          
+          <%= f.submit "Search", class: "btn btn-success" %>
+        <% end %>
+        
+        <%= link_to "Add Restaurant", new_restaurant_path, class: "btn btn-primary ms-2" %>
+      </div>
+    </nav>
+
     <div class="container mt-4">
       <%= yield %>
     </div>

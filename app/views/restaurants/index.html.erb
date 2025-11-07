@@ -1,6 +1,14 @@
 <h1>FoodBud - Restaurant Finder</h1>
 
-<%= link_to "New restaurant", new_restaurant_path, class: "btn btn-primary mb-3" %>
+<!-- Show search info if user searched -->
+<% if params[:keyword].present? %>
+  <div class="alert alert-info">
+    Showing results for: <strong><%= params[:keyword] %></strong>
+    <% if params[:radius].present? %>
+      within <strong><%= params[:radius] %> km</strong>
+    <% end %>
+  </div>
+<% end %>
 
 <!-- Simple Tabs -->
 <ul class="nav nav-tabs mb-3" id="restaurantTabs" role="tablist">
@@ -26,41 +34,47 @@
     </div>
 
     <!-- Restaurant Table -->
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Cuisine</th>
-          <th>Address</th>
-          <th>Type</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @restaurants.each do |restaurant| %>
+    <% if @restaurants.any? %>
+      <table class="table table-striped">
+        <thead>
           <tr>
-            <td><%= restaurant.name %></td>
-            <td><%= restaurant.cuisine %></td>
-            <td><%= restaurant.address %></td>
-            <td>
-              <% if restaurant.user_added %>
-                <span class="badge bg-success">User Added</span>
-              <% else %>
-                <span class="badge bg-primary">Database</span>
-              <% end %>
-            </td>
-            <td>
-              <%= link_to "Show", restaurant, class: "btn btn-sm btn-info" %>
-              <%= link_to "Edit", edit_restaurant_path(restaurant), class: "btn btn-sm btn-warning" %>
-              <%= link_to "Delete", restaurant, method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
-            </td>
+            <th>Name</th>
+            <th>Cuisine</th>
+            <th>Address</th>
+            <th>Type</th>
+            <th>Actions</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @restaurants.each do |restaurant| %>
+            <tr>
+              <td><%= restaurant.name %></td>
+              <td><%= restaurant.cuisine %></td>
+              <td><%= restaurant.address %></td>
+              <td>
+                <% if restaurant.user_added %>
+                  <span class="badge bg-success">User Added</span>
+                <% else %>
+                  <span class="badge bg-primary">Database</span>
+                <% end %>
+              </td>
+              <td>
+                <%= link_to "Show", restaurant, class: "btn btn-sm btn-info" %>
+                <%= link_to "Edit", edit_restaurant_path(restaurant), class: "btn btn-sm btn-warning" %>
+                <%= link_to "Delete", restaurant, method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="alert alert-warning">
+        No restaurants found. Try a different search!
+      </div>
+    <% end %>
   </div>
 
-  <!-- this tab will show user added restaurants -->
+  <!-- User Added Tab -->
   <div class="tab-pane fade" id="user-added" role="tabpanel">
     <% user_added = @restaurants.where(user_added: true) %>
     <% if user_added.any? %>
@@ -90,7 +104,7 @@
       </table>
     <% else %>
       <div class="alert alert-info">
-        No user-added restaurants yet. Click "New restaurant" and check the "User added" box to add your own!
+        No user-added restaurants yet. Click "Add Restaurant" and check the "User added" box to add your own!
       </div>
     <% end %>
   </div>
