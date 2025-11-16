@@ -1,4 +1,4 @@
-<h1>FoodBud - Restaurant Finder</h1>
+<h1>FoodBud</h1>
 
 <!-- Show search info if user searched -->
 <% if params[:keyword].present? %>
@@ -6,17 +6,20 @@
     Showing results for: <strong><%= params[:keyword] %></strong>
     <% if params[:latitude].present? && params[:longitude].present? %>
       within <strong><%= params[:radius] %> km</strong> of your location 📍
-    <% elsif params[:radius].present? %>
-      (location not available - showing all results)
     <% end %>
   </div>
 <% end %>
 
-<!-- Simple Tabs -->
+<!-- Three Tabs: Search Results (Google), Saved Places, User Added -->
 <ul class="nav nav-tabs mb-3" id="restaurantTabs" role="tablist">
   <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
-      All Restaurants (<%= @restaurants.count %>)
+    <button class="nav-link active" id="search-results-tab" data-bs-toggle="tab" data-bs-target="#search-results" type="button" role="tab">
+      Search Results <span class="badge bg-warning text-dark" id="googlePlacesCount">0</span>
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="saved-tab" data-bs-toggle="tab" data-bs-target="#saved" type="button" role="tab">
+      Saved Places (<%= @restaurants.where(user_added: false).count %>)
     </button>
   </li>
   <li class="nav-item" role="presentation">
@@ -26,40 +29,39 @@
   </li>
 </ul>
 
+<!-- Map (always visible) -->
+<div class="mb-4">
+  <%= render 'map' %>
+</div>
+
 <!-- Tab Content -->
 <div class="tab-content" id="restaurantTabContent">
-  <!-- All Restaurants Tab -->
-  <div class="tab-pane fade show active" id="all" role="tabpanel">
-    <!-- Map -->
-    <div class="mb-4">
-      <%= render 'map' %>
+  <!-- Search Results Tab (Google Places) -->
+  <div class="tab-pane fade show active" id="search-results" role="tabpanel">
+    <div id="googlePlacesList">
+      <p class="text-muted">Search for restaurants to see Google Places results here!</p>
     </div>
+  </div>
 
-    <!-- Restaurant Table -->
-    <% if @restaurants.any? %>
+  <!-- Saved Places Tab (Database restaurants, not user-added) -->
+  <div class="tab-pane fade" id="saved" role="tabpanel">
+    <% saved_restaurants = @restaurants.where(user_added: false) %>
+    <% if saved_restaurants.any? %>
       <table class="table table-striped">
         <thead>
           <tr>
             <th>Name</th>
             <th>Cuisine</th>
             <th>Address</th>
-            <th>Type</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <% @restaurants.each do |restaurant| %>
+          <% saved_restaurants.order(:name).each do |restaurant| %>
             <tr>
               <td><%= restaurant.name %></td>
               <td><%= restaurant.cuisine %></td>
               <td><%= restaurant.address %></td>
-              <td>
-                <% if restaurant.user_added %>
-                  <span class="badge bg-success">User Added</span>
-                <% else %>
-                  <span class="badge bg-primary">Database</span>
-                <% end %>
-              </td>
               <td>
                 <%= link_to "Show", restaurant, class: "btn btn-sm btn-info" %>
                 <%= link_to "Edit", edit_restaurant_path(restaurant), class: "btn btn-sm btn-warning" %>
@@ -70,16 +72,14 @@
         </tbody>
       </table>
     <% else %>
-      <div class="alert alert-warning">
-        No restaurants found. Try a different search!
-      </div>
+      <div class="alert alert-info">No saved restaurants yet.</div>
     <% end %>
   </div>
 
   <!-- User Added Tab -->
   <div class="tab-pane fade" id="user-added" role="tabpanel">
-    <% user_added = @restaurants.where(user_added: true) %>
-    <% if user_added.any? %>
+    <% user_added_restaurants = @restaurants.where(user_added: true) %>
+    <% if user_added_restaurants.any? %>
       <table class="table table-striped">
         <thead>
           <tr>
@@ -90,7 +90,7 @@
           </tr>
         </thead>
         <tbody>
-          <% user_added.each do |restaurant| %>
+          <% user_added_restaurants.order(created_at: :desc).each do |restaurant| %>
             <tr>
               <td><%= restaurant.name %></td>
               <td><%= restaurant.cuisine %></td>

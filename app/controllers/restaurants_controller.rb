@@ -1,12 +1,38 @@
 class RestaurantsController < ApplicationController
   before_action :set_restaurant, only: %i[ show edit update destroy ]
 
-  # GET /restaurants or /restaurants.json
+   # GET /restaurants or /restaurants.json
   def index
+    # Always show ALL restaurants for the map
     @restaurants = Restaurant.all
-    @latitude = 53.3498  # Default Dublin
+    
+    # Set default location (Dublin)
+    @latitude = 53.3498
     @longitude = -6.2603
     @radius = 25
+  end
+
+  # Search action - filters restaurants by keyword and radius
+  def search
+    # Start with all restaurants (for the map - always visible)
+    @restaurants = Restaurant.all
+    
+    # Store search parameters for Google Places
+    if params[:latitude].present? && params[:longitude].present?
+      @latitude = params[:latitude].to_f
+      @longitude = params[:longitude].to_f
+      @radius = params[:radius] || 25
+    else
+      @latitude = 53.3498
+      @longitude = -6.2603
+      @radius = 25
+    end
+    
+    # Note: We DON'T filter @restaurants here anymore
+    # All database restaurants are always shown on the map
+    # Only Google Places results are filtered by search
+    
+    render :index
   end
 
   # GET /restaurants/1 or /restaurants/1.json
@@ -60,21 +86,6 @@ class RestaurantsController < ApplicationController
     end
   end
 
-   # Search action - filters restaurants by keyword and radius
-  def search
-    # Start with all restaurants
-    @restaurants = Restaurant.all
-    
-    # Filter by keyword if provided
-    # Searches in both cuisine and name fields (case-insensitive)
-    if params[:keyword].present?
-      keyword = params[:keyword].downcase
-      @restaurants = @restaurants.where(
-        "LOWER(cuisine) LIKE ? OR LOWER(name) LIKE ?",
-        "%#{keyword}%",
-        "%#{keyword}%"
-      )
-    end
     
     # Filter by radius if user location coordinates are provided
     # These coordinates come from the browser's geolocation API (via JavaScript)
