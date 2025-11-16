@@ -2,61 +2,272 @@
 
 <script>
   let map;
+  let markers = [];
+  let infoWindow;
+  let googlePlaces = [];
 
   function initMap() {
-    const center = { lat: 53.3498, lng: -6.2603 };
+    // Use search location or default to Dublin
+    <% if @latitude && @longitude %>
+      const center = { lat: <%= @latitude %>, lng: <%= @longitude %> };
+    <% else %>
+      const center = { lat: 53.3498, lng: -6.2603 };
+    <% end %>
     
     map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 13,
+      zoom: 12,
       center: center
     });
 
-    // Make map globally accessible so geolocation.js can use it
+    // Make map globally accessible
     window.map = map;
+    infoWindow = new google.maps.InfoWindow();
 
-    // Add markers for all restaurants
+    // ALWAYS show ALL restaurants from database
     const restaurants = <%= raw @restaurants.map { |r| 
       { 
+        id: r.id, 
         name: r.name, 
+        cuisine: r.cuisine, 
         lat: r.latitude, 
         lng: r.longitude,
-        address: r.address
+        address: r.address,
+        website: r.website,
+        user_added: r.user_added
       } 
     }.to_json %>;
 
+    // Add markers for database restaurants
+    // Red markers = saved restaurants, Green = user added
     restaurants.forEach(restaurant => {
       if (restaurant.lat && restaurant.lng) {
         const marker = new google.maps.Marker({
           position: { lat: restaurant.lat, lng: restaurant.lng },
           map: map,
-          title: restaurant.name
+          title: restaurant.name,
+          icon: {
+            url: `http://maps.google.com/mapfiles/ms/icons/${restaurant.user_added ? 'green' : 'red'}-dot.png`
+          }
         });
 
-        const infoWindow = new google.maps.InfoWindow({
-          content: `<div><strong>${restaurant.name}</strong><br>${restaurant.address}</div>`
-        });
+        const contentString = `
+          <div style="padding: 10px; max-width: 250px;">
+            <h5>${restaurant.name}</h5>
+            <p><strong>Cuisine:</strong> ${restaurant.cuisine}</p>
+            <p><strong>Address:</strong> ${restaurant.address}</p>
+            ${restaurant.website ? `<a href="${restaurant.website}" target="_blank">Visit Website</a><br>` : ''}
+            <span class="badge bg-${restaurant.user_added ? 'success' : 'primary'}">
+              ${restaurant.user_added ? 'User Added' : 'Saved'}
+            </span>
+          </div>
+        `;
 
         marker.addListener('click', () => {
+          infoWindow.setContent(contentString);
           infoWindow.open(map, marker);
         });
+
+        markers.push(marker);
       }
     });
 
+    // Search for Google Places - only when searching with keyword
+    <% if params[:keyword].present? && @latitude && @longitude %>
+      searchNearbyPlaces(
+        <%= @latitude %>, 
+        <%= @longitude %>,
+        <%= (@radius || 25).to_i * 1000 %>,  // Convert km to meters
+        '<%= params[:keyword] %>'
+      );
+    <% end %>
+
     // Auto-center map to show all markers
-    if (restaurants.length > 0) {
-      const bounds = new google.maps.LatLngBounds();
-      restaurants.forEach(restaurant => {
-        if (restaurant.lat && restaurant.lng) {
-          bounds.extend({ lat: restaurant.lat, lng: restaurant.lng });
-        }
-      });
+    const bounds = new google.maps.LatLngBounds();
+    let hasMarkers = false;
+    
+    restaurants.forEach(restaurant => {
+      if (restaurant.lat && restaurant.lng) {
+        bounds.extend({ lat: restaurant.lat, lng: restaurant.lng });
+        hasMarkers = true;
+      }
+    });
+    
+    if (hasMarkers) {
       map.fitBounds(bounds);
     }
   }
+
+  // Search for nearby restaurants using Google Places API (New)
+  async function searchNearbyPlaces(lat, lng, radius, keyword) {
+    // Load the new Places library
+    const { Place } = await google.maps.importLibrary("places");
+    
+    // Build search request
+    const request = {
+      textQuery: keyword ? `${keyword} restaurants` : 'restaurants',
+      fields: ['displayName', 'location', 'formattedAddress', 'rating', 'websiteURI', 'id'],
+      locationBias: {
+        center: { lat: lat, lng: lng },
+        radius: radius  // Search within X meters
+      },
+      maxResultCount: 10  // Limit to 10 results to save API costs
+    };
+
+    try {
+      // Make API call
+      const { places } = await Place.searchByText(request);
+
+      if (places && places.length > 0) {
+        googlePlaces = places;
+        
+        // Update badge count in UI
+        if (document.getElementById('googlePlacesCount')) {
+          document.getElementById('googlePlacesCount').textContent = places.length;
+        }
+        
+        // Populate the Google Places list in sidebar
+        updateGooglePlacesList(places);
+        
+        // Add yellow markers for Google Places
+        places.forEach(place => {
+          createGooglePlaceMarker(place);
+        });
+        
+        // Extend map bounds to include Google Places
+        const bounds = new google.maps.LatLngBounds();
+        markers.forEach(marker => {
+          if (marker.position) {
+            bounds.extend(marker.position);
+          }
+        });
+        map.fitBounds(bounds);
+      } else {
+        // No results found
+        if (document.getElementById('googlePlacesCount')) {
+          document.getElementById('googlePlacesCount').textContent = '0';
+        }
+        if (document.getElementById('googlePlacesList')) {
+          document.getElementById('googlePlacesList').innerHTML = '<p class="text-muted">No Google Places found for this search.</p>';
+        }
+      }
+    } catch (error) {
+      console.error('Places API error:', error);
+      if (document.getElementById('googlePlacesList')) {
+        document.getElementById('googlePlacesList').innerHTML = '<p class="text-muted">Error loading Google Places.</p>';
+      }
+    }
+  }
+
+  // Create cards in sidebar for Google Places results
+  function updateGooglePlacesList(places) {
+    const listContainer = document.getElementById('googlePlacesList');
+    if (!listContainer) return;
+    
+    listContainer.innerHTML = '';
+    
+    places.forEach(place => {
+      const rating = place.rating ? `⭐ ${place.rating}/5` : 'No rating';
+      
+      // Create card element
+      const card = document.createElement('div');
+      card.className = 'card mb-3';
+      card.innerHTML = `
+        <div class="card-body">
+          <h5 class="card-title">
+            ${place.displayName}
+            <span class="badge bg-warning text-dark">Google</span>
+          </h5>
+          <p class="card-text">
+            <strong>Address:</strong> ${place.formattedAddress}<br>
+            <strong>Rating:</strong> ${rating}
+            ${place.websiteURI ? `<br><strong>Website:</strong> <a href="${place.websiteURI}" target="_blank" class="text-truncate d-inline-block" style="max-width: 200px;">${place.websiteURI}</a>` : ''}
+          </p>
+          <div class="btn-group" role="group">
+            <button class="btn btn-sm btn-success" onclick="saveGooglePlace('${place.id}', \`${place.displayName}\`, \`${place.formattedAddress}\`, '${place.websiteURI || ''}', ${place.location.lat()}, ${place.location.lng()})">
+              💾 Save to Database
+            </button>
+          </div>
+        </div>
+      `;
+      listContainer.appendChild(card);
+    });
+  }
+
+  // Add yellow marker for Google Place result
+  function createGooglePlaceMarker(place) {
+    const marker = new google.maps.Marker({
+      position: place.location,
+      map: map,
+      title: place.displayName,
+      icon: {
+        url: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'  // Yellow for Google
+      }
+    });
+
+    marker.addListener('click', () => {
+      const rating = place.rating ? `⭐ ${place.rating}/5` : 'No rating';
+      
+      const contentString = `
+        <div style="padding: 10px; max-width: 250px;">
+          <h5>${place.displayName}</h5>
+          <p>${place.formattedAddress}</p>
+          <p>${rating}</p>
+          ${place.websiteURI ? `<a href="${place.websiteURI}" target="_blank">Website</a><br>` : ''}
+          <span class="badge bg-warning text-dark">Google Places</span><br>
+          <button class="btn btn-sm btn-success mt-2" onclick="saveGooglePlace('${place.id}', \`${place.displayName}\`, \`${place.formattedAddress}\`, '${place.websiteURI || ''}', ${place.location.lat()}, ${place.location.lng()})">
+            💾 Save
+          </button>
+        </div>
+      `;
+      
+      infoWindow.setContent(contentString);
+      infoWindow.open(map, marker);
+    });
+
+    markers.push(marker);
+  }
+
+  // Save Google Place to database
+  // Creates a form and submits it to create a new restaurant
+  window.saveGooglePlace = function(placeId, name, address, website, lat, lng) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/restaurants';
+    
+    // Add CSRF token for Rails security
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'authenticity_token';
+    csrfInput.value = csrfToken;
+    form.appendChild(csrfInput);
+    
+    // Add restaurant data as hidden fields
+    const fields = {
+      'restaurant[name]': name,
+      'restaurant[cuisine]': 'Restaurant',  // Default cuisine
+      'restaurant[address]': address,
+      'restaurant[website]': website,
+      'restaurant[latitude]': lat,
+      'restaurant[longitude]': lng,
+      'restaurant[user_added]': 'false'  // Mark as saved (not user-added)
+    };
+    
+    for (const [fieldName, value] of Object.entries(fields)) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = fieldName;
+      input.value = value;
+      form.appendChild(input);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+  };
 
   window.initMap = initMap;
 </script>
 
 <script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.dig(:google_maps, :api_key) %>&callback=initMap">
+  src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.dig(:google_maps, :api_key) %>&callback=initMap&libraries=places">
 </script>
