@@ -18,15 +18,38 @@
     <!-- Navigation bar with search -->
     <nav class="navbar navbar-dark bg-dark">
       <div class="container-fluid">
-        <%= link_to "🍽️ FoodBud", root_path, class: "navbar-brand" %>
+        <%= link_to "FoodBud", root_path, class: "navbar-brand" %>
         
-        <!-- Search form -->
-        <%= form_with url: search_restaurants_path, method: :get, class: "d-flex", role: "search" do |f| %>
+        <!-- Search form with location options -->
+        <%= form_with url: search_restaurants_path, method: :get, class: "d-flex flex-wrap align-items-center", role: "search", id: "searchForm" do |f| %>
+          
+          <!-- Location Mode Dropdown -->
+          <div class="dropdown me-2">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" id="locationModeBtn" data-bs-toggle="dropdown">
+              📍 <span id="locationModeText">Use My Location</span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#" id="useMyLocation">📍 Use My Location</a></li>
+              <li><a class="dropdown-item" href="#" id="useCustomLocation">🗺️ Set Custom Location</a></li>
+            </ul>
+          </div>
+          
+          <!-- Custom Location Search (hidden by default) -->
+          <!-- This input appears when user selects "Set Custom Location" -->
+          <div id="customLocationSearch" style="display: none;" class="me-2">
+            <%= f.text_field :custom_location, 
+                placeholder: "e.g., Galway, Ireland", 
+                class: "form-control",
+                style: "width: 200px;",
+                id: "customLocationInput" %>
+          </div>
+          
           <!-- Keyword input field -->
           <%= f.text_field :keyword, 
               placeholder: "Search cuisine (e.g., burger, pizza)", 
               class: "form-control me-2",
-              value: params[:keyword] %>  <%# Keep search term visible after search %>
+              style: "width: 250px;",
+              value: params[:keyword] %>
           
           <!-- Radius dropdown selector -->
           <%= f.select :radius, 
@@ -35,10 +58,15 @@
                 ['10 km', 10],
                 ['15 km', 15],
                 ['25 km', 25]
-              ], params[:radius] || 25), 
+              ], params[:radius] || 25),
               {},
               class: "form-select me-2",
               style: "max-width: 120px;" %>
+          
+          <!-- Hidden fields for storing location data -->
+          <%= f.hidden_field :latitude, id: "latitude" %>
+          <%= f.hidden_field :longitude, id: "longitude" %>
+          <%= f.hidden_field :location_mode, value: "my_location", id: "locationMode" %>
           
           <%= f.submit "Search", class: "btn btn-success" %>
         <% end %>

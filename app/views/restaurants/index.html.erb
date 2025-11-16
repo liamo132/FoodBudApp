@@ -4,8 +4,10 @@
 <% if params[:keyword].present? %>
   <div class="alert alert-info">
     Showing results for: <strong><%= params[:keyword] %></strong>
-    <% if params[:radius].present? %>
-      within <strong><%= params[:radius] %> km</strong>
+    <% if params[:latitude].present? && params[:longitude].present? %>
+      within <strong><%= params[:radius] %> km</strong> of your location 📍
+    <% elsif params[:radius].present? %>
+      (location not available - showing all results)
     <% end %>
   </div>
 <% end %>

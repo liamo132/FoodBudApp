@@ -4,6 +4,9 @@ class RestaurantsController < ApplicationController
   # GET /restaurants or /restaurants.json
   def index
     @restaurants = Restaurant.all
+    @latitude = 53.3498  # Default Dublin
+    @longitude = -6.2603
+    @radius = 25
   end
 
   # GET /restaurants/1 or /restaurants/1.json
@@ -25,7 +28,7 @@ class RestaurantsController < ApplicationController
 
     respond_to do |format|
       if @restaurant.save
-        format.html { redirect_to @restaurant, notice: "Restaurant was successfully created." }
+        format.html { redirect_to restaurants_path, notice: "Restaurant was successfully created." }
         format.json { render :show, status: :created, location: @restaurant }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -38,7 +41,7 @@ class RestaurantsController < ApplicationController
   def update
     respond_to do |format|
       if @restaurant.update(restaurant_params)
-        format.html { redirect_to @restaurant, notice: "Restaurant was successfully updated.", status: :see_other }
+        format.html { redirect_to restaurants_path, notice: "Restaurant was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @restaurant }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -57,7 +60,7 @@ class RestaurantsController < ApplicationController
     end
   end
 
-    # Search action - filters restaurants by keyword and radius
+   # Search action - filters restaurants by keyword and radius
   def search
     # Start with all restaurants
     @restaurants = Restaurant.all
@@ -65,29 +68,34 @@ class RestaurantsController < ApplicationController
     # Filter by keyword if provided
     # Searches in both cuisine and name fields (case-insensitive)
     if params[:keyword].present?
-      keyword = params[:keyword].downcase  # Convert to lowercase for case-insensitive search
+      keyword = params[:keyword].downcase
       @restaurants = @restaurants.where(
-        "LOWER(cuisine) LIKE ? OR LOWER(name) LIKE ?",  # SQL LOWER() for case-insensitive
-        "%#{keyword}%",  # % wildcards mean "contains" (e.g., "piz" matches "pizza")
+        "LOWER(cuisine) LIKE ? OR LOWER(name) LIKE ?",
+        "%#{keyword}%",
         "%#{keyword}%"
       )
     end
     
     # Filter by radius if user location coordinates are provided
+    # These coordinates come from the browser's geolocation API (via JavaScript)
     if params[:latitude].present? && params[:longitude].present?
-      latitude = params[:latitude].to_f   # Convert string to float
-      longitude = params[:longitude].to_f
-      radius = params[:radius] || 25      # Default to 25km if not specified
+      @latitude = params[:latitude].to_f    # Store for view to use
+      @longitude = params[:longitude].to_f
+      @radius = params[:radius] || 25
       
       # Geocoder's 'near' method finds restaurants within X km of coordinates
       # Uses Haversine formula to calculate distances on Earth's surface
-      @restaurants = @restaurants.near([latitude, longitude], radius, units: :km)
+      @restaurants = @restaurants.near([@latitude, @longitude], @radius, units: :km)
+    else
+      # No location provided - set defaults (Dublin city center)
+      @latitude = 53.3498
+      @longitude = -6.2603
+      @radius = 25
     end
     
-    # Render the index view (reuse the same template)
     render :index
   end
-  
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_restaurant
