@@ -1,0 +1,27 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <h5 class="card-title">
+      <%= restaurant.name %>
+      <% if restaurant.user_added %>
+        <span class="badge bg-success">User Added</span>
+      <% end %>
+    </h5>
+    <p class="card-text">
+      <strong>Cuisine:</strong> <%= restaurant.cuisine %><br>
+      <strong>Address:</strong> <%= restaurant.address %><br>
+      <% if restaurant.website.present? %>
+        <strong>Website:</strong> <a href="<%= restaurant.website %>" target="_blank"><%= restaurant.website %></a>
+      <% end %>
+    </p>
+    <div class="btn-group" role="group">
+      <%= link_to "View", restaurant, class: "btn btn-sm btn-primary" %>
+      <%= link_to "Edit", edit_restaurant_path(restaurant), class: "btn btn-sm btn-warning" %>
+      <%= link_to "Delete", restaurant, method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+      <% if restaurant.latitude && restaurant.longitude %>
+        <a href="https://www.google.com/maps/search/?api=1&query=<%= restaurant.latitude %>,<%= restaurant.longitude %>" target="_blank" class="btn btn-sm btn-info">
+          Open in Maps
+        </a>
+      <% end %>
+    </div>
+  </div>
+</div>

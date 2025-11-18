@@ -160,38 +160,40 @@
 
   // Create cards in sidebar for Google Places results
   function updateGooglePlacesList(places) {
-    const listContainer = document.getElementById('googlePlacesList');
-    if (!listContainer) return;
+  const listContainer = document.getElementById('googlePlacesList');
+  if (!listContainer) return;
+  
+  listContainer.innerHTML = '';
+  
+  places.forEach(place => {
+    const rating = place.rating ? `⭐ ${place.rating}/5` : 'No rating';
     
-    listContainer.innerHTML = '';
-    
-    places.forEach(place => {
-      const rating = place.rating ? `⭐ ${place.rating}/5` : 'No rating';
-      
-      // Create card element
-      const card = document.createElement('div');
-      card.className = 'card mb-3';
-      card.innerHTML = `
-        <div class="card-body">
-          <h5 class="card-title">
-            ${place.displayName}
-            <span class="badge bg-warning text-dark">Google</span>
-          </h5>
-          <p class="card-text">
-            <strong>Address:</strong> ${place.formattedAddress}<br>
-            <strong>Rating:</strong> ${rating}
-            ${place.websiteURI ? `<br><strong>Website:</strong> <a href="${place.websiteURI}" target="_blank" class="text-truncate d-inline-block" style="max-width: 200px;">${place.websiteURI}</a>` : ''}
-          </p>
-          <div class="btn-group" role="group">
-            <button class="btn btn-sm btn-success" onclick="saveGooglePlace('${place.id}', \`${place.displayName}\`, \`${place.formattedAddress}\`, '${place.websiteURI || ''}', ${place.location.lat()}, ${place.location.lng()})">
-              💾 Save to Database
-            </button>
-          </div>
+    const card = document.createElement('div');
+    card.className = 'card mb-3';
+    card.innerHTML = `
+      <div class="card-body">
+        <h5 class="card-title">
+          ${place.displayName}
+          <span class="badge bg-warning text-dark">Google</span>
+        </h5>
+        <p class="card-text">
+          <strong>Address:</strong> ${place.formattedAddress}<br>
+          <strong>Rating:</strong> ${rating}
+          ${place.websiteURI ? `<br><strong>Website:</strong> <a href="${place.websiteURI}" target="_blank" class="text-truncate d-inline-block" style="max-width: 200px;">${place.websiteURI}</a>` : ''}
+        </p>
+        <div class="btn-group" role="group">
+          <button class="btn btn-sm btn-success" onclick="saveGooglePlace('${place.id}', \`${place.displayName}\`, \`${place.formattedAddress}\`, '${place.websiteURI || ''}', ${place.location.lat()}, ${place.location.lng()})">
+            💾 Save to Database
+          </button>
+          <a href="https://www.google.com/maps/search/?api=1&query=${place.location.lat()},${place.location.lng()}" target="_blank" class="btn btn-sm btn-info">
+            🗺️ Open in Maps
+          </a>
         </div>
-      `;
-      listContainer.appendChild(card);
-    });
-  }
+      </div>
+    `;
+    listContainer.appendChild(card);
+  });
+}
 
   // Add yellow marker for Google Place result
   function createGooglePlaceMarker(place) {

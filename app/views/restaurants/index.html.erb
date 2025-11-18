@@ -1,6 +1,5 @@
-<h1>FoodBud</h1>
+<h1>FoodBud - Restaurant Finder</h1>
 
-<!-- Show search info if user searched -->
 <% if params[:keyword].present? %>
   <div class="alert alert-info">
     Showing results for: <strong><%= params[:keyword] %></strong>
@@ -10,7 +9,6 @@
   </div>
 <% end %>
 
-<!-- Three Tabs: Search Results (Google), Saved Places, User Added -->
 <ul class="nav nav-tabs mb-3" id="restaurantTabs" role="tablist">
   <li class="nav-item" role="presentation">
     <button class="nav-link active" id="search-results-tab" data-bs-toggle="tab" data-bs-target="#search-results" type="button" role="tab">
@@ -29,84 +27,37 @@
   </li>
 </ul>
 
-<!-- Map (always visible) -->
 <div class="mb-4">
   <%= render 'map' %>
 </div>
 
-<!-- Tab Content -->
 <div class="tab-content" id="restaurantTabContent">
-  <!-- Search Results Tab (Google Places) -->
   <div class="tab-pane fade show active" id="search-results" role="tabpanel">
     <div id="googlePlacesList">
       <p class="text-muted">Search for restaurants to see Google Places results here!</p>
     </div>
   </div>
 
-  <!-- Saved Places Tab (Database restaurants, not user-added) -->
   <div class="tab-pane fade" id="saved" role="tabpanel">
     <% saved_restaurants = @restaurants.where(user_added: false) %>
     <% if saved_restaurants.any? %>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Cuisine</th>
-            <th>Address</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% saved_restaurants.order(:name).each do |restaurant| %>
-            <tr>
-              <td><%= restaurant.name %></td>
-              <td><%= restaurant.cuisine %></td>
-              <td><%= restaurant.address %></td>
-              <td>
-                <%= link_to "Show", restaurant, class: "btn btn-sm btn-info" %>
-                <%= link_to "Edit", edit_restaurant_path(restaurant), class: "btn btn-sm btn-warning" %>
-                <%= link_to "Delete", restaurant, method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+      <% saved_restaurants.order(:name).each do |restaurant| %>
+        <%= render 'restaurant_card', restaurant: restaurant %>
+      <% end %>
     <% else %>
       <div class="alert alert-info">No saved restaurants yet.</div>
     <% end %>
   </div>
 
-  <!-- User Added Tab -->
   <div class="tab-pane fade" id="user-added" role="tabpanel">
     <% user_added_restaurants = @restaurants.where(user_added: true) %>
     <% if user_added_restaurants.any? %>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Cuisine</th>
-            <th>Address</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% user_added_restaurants.order(created_at: :desc).each do |restaurant| %>
-            <tr>
-              <td><%= restaurant.name %></td>
-              <td><%= restaurant.cuisine %></td>
-              <td><%= restaurant.address %></td>
-              <td>
-                <%= link_to "Show", restaurant, class: "btn btn-sm btn-info" %>
-                <%= link_to "Edit", edit_restaurant_path(restaurant), class: "btn btn-sm btn-warning" %>
-                <%= link_to "Delete", restaurant, method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+      <% user_added_restaurants.order(created_at: :desc).each do |restaurant| %>
+        <%= render 'restaurant_card', restaurant: restaurant %>
+      <% end %>
     <% else %>
       <div class="alert alert-info">
-        No user-added restaurants yet. Click "Add Restaurant" and check the "User added" box to add your own!
+        No user-added restaurants yet. Click "Add Restaurant" and check the "User added" box!
       </div>
     <% end %>
   </div>
