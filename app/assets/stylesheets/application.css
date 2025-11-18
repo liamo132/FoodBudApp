@@ -1,10 +1,150 @@
 /*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
+ * FoodBud Custom Styles
  */
+
+@import url("https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css");
+
+/* Color Palette */
+:root {
+  --primary-tomato: #FF6347;
+  --secondary-green: #4CAF50;
+  --accent-peach: #FFC107;
+  --neutral-light: #F9F9F9;
+  --neutral-dark: #333333;
+  --muted-gray: #CFCFCF;
+  
+  --font-primary: 'Poppins', sans-serif;
+  --font-secondary: 'Open Sans', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-secondary);
+  color: var(--neutral-dark);
+  background-color: #ffffff;
+  font-size: 16px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  font-weight: 600;
+  color: var(--primary-tomato);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primary-tomato);
+  border: none;
+  font-family: var(--font-primary);
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background-color: #e5533d;
+}
+
+.btn-success {
+  background-color: var(--secondary-green);
+  border: none;
+  font-family: var(--font-primary);
+}
+
+.btn-success:hover {
+  background-color: #45a049;
+}
+
+/* Cards with red border */
+.card {
+  border: 2px solid var(--primary-tomato);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(255, 99, 71, 0.3);
+  transform: translateY(-2px);
+}
+
+.card-title {
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--neutral-dark);
+}
+
+/* Badges */
+.badge.bg-success {
+  background-color: var(--secondary-green) !important;
+}
+
+.badge.bg-primary {
+  background-color: var(--primary-tomato) !important;
+}
+
+.badge.bg-warning {
+  background-color: var(--accent-peach) !important;
+  color: var(--neutral-dark) !important;
+}
+
+/* Tabs */
+.nav-tabs .nav-link {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  color: var(--neutral-dark);
+  border-bottom: 3px solid transparent;
+}
+
+.nav-tabs .nav-link:hover {
+  border-bottom-color: var(--accent-peach);
+  color: var(--primary-tomato);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--primary-tomato);
+  border-bottom-color: var(--primary-tomato);
+  font-weight: 600;
+}
+
+/* Map styling */
+#map {
+  border-radius: 12px;
+  border: 3px solid var(--primary-tomato);
+  box-shadow: 0 4px 16px rgba(255, 99, 71, 0.2);
+}
+
+/* Form controls */
+.form-control, .form-select {
+  border: 2px solid var(--muted-gray);
+  border-radius: 8px;
+  font-family: var(--font-secondary);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-tomato);
+  box-shadow: 0 0 0 0.2rem rgba(255, 99, 71, 0.15);
+}
+
+/* Dropdown */
+.dropdown-toggle {
+  background-color: white;
+  border: 2px solid var(--muted-gray);
+  color: var(--neutral-dark);
+  font-family: var(--font-primary);
+}
+
+.dropdown-toggle:hover {
+  border-color: var(--primary-tomato);
+}
+
+/* Alert */
+.alert-info {
+  background-color: var(--neutral-light);
+  border: 1px solid var(--muted-gray);
+  color: var(--neutral-dark);
+}
