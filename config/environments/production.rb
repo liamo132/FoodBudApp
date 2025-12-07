@@ -17,8 +17,6 @@ Rails.application.configure do
     "Cache-Control" => "public, max-age=#{1.year.to_i}"
   }
 
-  # Store uploaded files locally (fine for Render free tier).
-  config.active_storage.service = :local
 
   # Log to STDOUT for Render.
   config.log_tags = [:request_id]
