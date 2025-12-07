@@ -1,4 +1,5 @@
-class ApplicationMailer < ActionMailer::Base
-  default from: "from@example.com"
-  layout "mailer"
+# Mailers are disabled in this API-only application.
+# This ensures ActionMailer is never loaded in production.
+
+class ApplicationMailer
 end
