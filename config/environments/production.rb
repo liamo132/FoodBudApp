@@ -43,9 +43,6 @@ Rails.application.configure do
 
   # ------------------------------------------------------------------------------------
 
-  # Default host for URL helpers in emails (not used in API-only apps)
-  config.action_mailer.default_url_options = { host: "example.com" }
-
   # Enable I18n fallbacks.
   config.i18n.fallbacks = true
 
