@@ -8,10 +8,20 @@ import './styles/App.css';
 
 function App() {
   const [restaurants, setRestaurants] = useState([]);
+  const [allRestaurants, setAllRestaurants] = useState([]);
   const [searchParams, setSearchParams] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [googlePlaces, setGooglePlaces] = useState([]);
   const [mapsApiKey, setMapsApiKey] = useState('');
+
+  const dedupeById = (list) => {
+    const seen = new Set();
+    return list.filter((r) => {
+      if (seen.has(r.id)) return false;
+      seen.add(r.id);
+      return true;
+    });
+  };
 
   // Load all restaurants on mount
   useEffect(() => {
@@ -49,6 +59,7 @@ function App() {
   const loadRestaurants = async () => {
     try {
       const data = await restaurantAPI.getAll();
+      setAllRestaurants(data);
       setRestaurants(data);
     } catch (error) {
       console.error('Error loading restaurants:', error);
@@ -76,7 +87,10 @@ function App() {
         });
       }
 
-      setRestaurants(data);
+      // Ensure user-added entries remain visible even if search results are empty
+      const userAdded = allRestaurants.filter((r) => r.user_added);
+      const merged = dedupeById([...(data || []), ...userAdded]);
+      setRestaurants(merged);
     } catch (error) {
       console.error('Error searching:', error);
     }
