@@ -997,3 +997,4 @@ Processing by Api::V1::RestaurantsController#index as HTML
 Completed 200 OK in 2ms (Views: 1.7ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
 
 
+  [1m[36mRestaurant Delete All (5.9ms)[0m  [1m[31mDELETE FROM "restaurants" /*application='Backend'*/[0m

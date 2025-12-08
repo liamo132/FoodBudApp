@@ -60,6 +60,8 @@ module Api
           longitude = params[:longitude].to_f
           radius = (params[:radius] || 25).to_f
 
+          # Only include records that have been geocoded
+          @restaurants = @restaurants.where.not(latitude: nil, longitude: nil)
           @restaurants = @restaurants.near([latitude, longitude], radius, units: :km)
         end
 
