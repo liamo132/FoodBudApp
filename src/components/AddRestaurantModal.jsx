@@ -41,7 +41,7 @@ function AddRestaurantModal({ show, onHide, onSave }) {
               <button type="button" className="btn-close" onClick={onHide}></button>
             </div>
             <div className="modal-body">
-              <form onSubmit={handleSubmit} id="addRestaurantForm">
+              <form onSubmit={handleSubmit} id="addRestaurantForm" data-testid="add-restaurant-form">
                 <div className="mb-3">
                   <label htmlFor="name" className="form-label">Name</label>
                   <input

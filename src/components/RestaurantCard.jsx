@@ -30,10 +30,11 @@ function RestaurantCard({ restaurant, onDelete, onUpdate }) {
           <h5 className="card-title">Edit Restaurant</h5>
 
           <div className="mb-2">
-            <label className="form-label">Name</label>
+            <label className="form-label" htmlFor={`name-${restaurant.id}`}>Name</label>
             <input
               type="text"
               className="form-control form-control-sm"
+              id={`name-${restaurant.id}`}
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -41,10 +42,11 @@ function RestaurantCard({ restaurant, onDelete, onUpdate }) {
           </div>
 
           <div className="mb-2">
-            <label className="form-label">Cuisine</label>
+            <label className="form-label" htmlFor={`cuisine-${restaurant.id}`}>Cuisine</label>
             <input
               type="text"
               className="form-control form-control-sm"
+              id={`cuisine-${restaurant.id}`}
               name="cuisine"
               value={formData.cuisine}
               onChange={handleChange}
@@ -52,10 +54,11 @@ function RestaurantCard({ restaurant, onDelete, onUpdate }) {
           </div>
 
           <div className="mb-2">
-            <label className="form-label">Address</label>
+            <label className="form-label" htmlFor={`address-${restaurant.id}`}>Address</label>
             <input
               type="text"
               className="form-control form-control-sm"
+              id={`address-${restaurant.id}`}
               name="address"
               value={formData.address}
               onChange={handleChange}
@@ -63,10 +66,11 @@ function RestaurantCard({ restaurant, onDelete, onUpdate }) {
           </div>
 
           <div className="mb-2">
-            <label className="form-label">Website</label>
+            <label className="form-label" htmlFor={`website-${restaurant.id}`}>Website</label>
             <input
               type="url"
               className="form-control form-control-sm"
+              id={`website-${restaurant.id}`}
               name="website"
               value={formData.website}
               onChange={handleChange}
@@ -77,11 +81,12 @@ function RestaurantCard({ restaurant, onDelete, onUpdate }) {
             <input
               type="checkbox"
               className="form-check-input"
+              id={`user_added-${restaurant.id}`}
               name="user_added"
               checked={formData.user_added}
               onChange={handleChange}
             />
-            <label className="form-check-label">User Added</label>
+            <label className="form-check-label" htmlFor={`user_added-${restaurant.id}`}>User Added</label>
           </div>
 
           <div className="btn-group">
