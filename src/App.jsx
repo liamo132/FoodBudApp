@@ -55,12 +55,28 @@ function App() {
     }
   };
 
-  // Handle search
+  // Handle search (use backend search when params are provided)
   const handleSearch = async (params) => {
     try {
       setSearchParams(params);
-      // Always load ALL restaurants for map
-      await loadRestaurants();
+
+      let data;
+      if (params?.keyword || (params?.latitude && params?.longitude)) {
+        data = await restaurantAPI.search(params);
+      } else {
+        data = await restaurantAPI.getAll();
+      }
+
+      // Sort closest-first if distance is present in payload
+      if (Array.isArray(data)) {
+        data = [...data].sort((a, b) => {
+          const da = a.distance ?? Number.MAX_SAFE_INTEGER;
+          const db = b.distance ?? Number.MAX_SAFE_INTEGER;
+          return da - db;
+        });
+      }
+
+      setRestaurants(data);
     } catch (error) {
       console.error('Error searching:', error);
     }
