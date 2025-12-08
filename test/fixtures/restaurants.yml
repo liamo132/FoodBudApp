@@ -1,0 +1,26 @@
+bunsen:
+  name: Bunsen
+  cuisine: Burgers
+  address: 36 Wexford Street, Dublin 2
+  website: https://bunsen.ie
+  user_added: false
+  latitude: 53.3369
+  longitude: -6.2666
+
+hang_dai:
+  name: Hang Dai
+  cuisine: Chinese
+  address: 13-14 Camden Street Lower, Dublin 2
+  website: https://hangdai.ie
+  user_added: false
+  latitude: 53.3360
+  longitude: -6.2650
+
+user_pick:
+  name: My Local
+  cuisine: Cafe
+  address: 123 College Road, Dublin
+  website: https://example.test
+  user_added: true
+  latitude: 53.3500
+  longitude: -6.2600

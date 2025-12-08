@@ -1,0 +1,1006 @@
+ÿþ  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "restaurants" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mFixtures Load (0.4ms)[0m  [1m[31mDELETE FROM "restaurants";
+INSERT INTO "restaurants" ("id", "address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES (973268428, '36 Wexford Street, Dublin 2', '2025-12-08 18:41:19.455845', 'Burgers', 53.3369, -6.2666, 'Bunsen', '2025-12-08 18:41:19.455845', FALSE, 'https://bunsen.ie'), (104405334, '13-14 Camden Street Lower, Dublin 2', '2025-12-08 18:41:19.455845', 'Chinese', 53.336, -6.265, 'Hang Dai', '2025-12-08 18:41:19.455845', FALSE, 'https://hangdai.ie'), (592200533, '123 College Road, Dublin', '2025-12-08 18:41:19.455845', 'Cafe', 53.35, -6.26, 'My Local', '2025-12-08 18:41:19.455845', TRUE, 'https://example.test')[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "restaurants" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.6ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_catalog.pg_constraint SET convalidated=false WHERE conname = ''%1$I'' AND connamespace::regnamespace = ''%2$I''::regnamespace; ALTER TABLE %2$I.%3$I VALIDATE CONSTRAINT %1$I;',
+    constraint_name,
+    table_schema,
+    table_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------
+Api::V1::ConfigControllerTest: test_returns_maps_api_key_payload
+----------------------------------------------------------------
+Started GET "/api/v1/config/maps_key" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::ConfigController#maps_key as JSON
+  Parameters: {"config" => {}}
+Completed 200 OK in 15ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 11.5ms)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------------
+RestaurantTest: test_scopes_separate_user-added_and_searched_restaurants
+------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.5ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", true], ["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", true], ["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", false], ["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", false], ["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------
+RestaurantTest: test_geocodes_on_create_when_address_is_present
+---------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.4ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "987 New Address, Dublin"], ["created_at", "2025-12-08 18:41:19.519188"], ["cuisine", "Test"], ["latitude", 53.36], ["longitude", -6.25], ["name", "Geo Test"], ["updated_at", "2025-12-08 18:41:19.519188"], ["user_added", nil], ["website", nil]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------
+RestaurantTest: test_is_valid_with_all_required_attributes
+----------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------
+RestaurantTest: test_updates_coordinates_when_address_changes
+-------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.3ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "111 Old Address, Dublin"], ["created_at", "2025-12-08 18:41:19.523473"], ["cuisine", "Test"], ["latitude", 53.32], ["longitude", -6.24], ["name", "Old Address"], ["updated_at", "2025-12-08 18:41:19.523473"], ["user_added", nil], ["website", nil]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Update (0.3ms)[0m  [1m[33mUPDATE "restaurants" SET "address" = $1, "latitude" = $2, "longitude" = $3, "updated_at" = $4 WHERE "restaurants"."id" = $5[0m  [["address", "987 New Address, Dublin"], ["latitude", 53.36], ["longitude", -6.25], ["updated_at", "2025-12-08 18:41:19.524285"], ["id", 973268430]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------
+RestaurantTest: test_requires_name,_cuisine,_and_address
+--------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_filters_by_keyword
+------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started POST "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"keyword" => "burger", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.3ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE (LOWER(cuisine) LIKE $1 OR LOWER(name) LIKE $2)[0m  [[nil, "%burger%"], [nil, "%burger%"]]
+Completed 200 OK in 1ms (Views: 0.4ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.2ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_does_not_update_with_invalid_data
+--------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started PATCH "/api/v1/restaurants/592200533" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#update as JSON
+  Parameters: {"restaurant" => {"name" => ""}, "id" => "592200533"}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Completed 422 Unprocessable Content in 1ms (Views: 0.1ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_index_returns_all_restaurants
+----------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#index as JSON
+  Parameters: {"restaurant" => {}}
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants"[0m
+Completed 200 OK in 2ms (Views: 2.1ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 1.6ms)
+  [1m[36mRestaurant Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_creates_a_restaurant_with_valid_data
+-----------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started POST "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#create as JSON
+  Parameters: {"restaurant" => {"name" => "New Spot", "cuisine" => "Italian", "address" => "987 New Address, Dublin", "website" => "https://new.example", "user_added" => true}}
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.3ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "987 New Address, Dublin"], ["created_at", "2025-12-08 18:41:19.548763"], ["cuisine", "Italian"], ["latitude", 53.36], ["longitude", -6.25], ["name", "New Spot"], ["updated_at", "2025-12-08 18:41:19.548763"], ["user_added", true], ["website", "https://new.example"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 201 Created in 2ms (Views: 0.1ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.6ms)
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_destroys_a_restaurant
+--------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started DELETE "/api/v1/restaurants/104405334" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#destroy as JSON
+  Parameters: {"id" => "104405334", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Destroy (0.5ms)[0m  [1m[31mDELETE FROM "restaurants" WHERE "restaurants"."id" = $1[0m  [["id", 104405334]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 204 No Content in 2ms (ActiveRecord: 0.8ms (2 queries, 0 cached) | GC: 0.6ms)
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_filters_by_coordinates_and_radius
+---------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started POST "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"latitude" => 53.35, "longitude" => -6.26, "radius" => 5, "restaurant" => {"latitude" => 53.35, "longitude" => -6.26}}
+Completed 200 OK in 0ms (Views: 0.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_show_returns_404_for_missing_restaurant
+--------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/-1" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#show as JSON
+  Parameters: {"id" => "-1", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", -1], ["LIMIT", 1]]
+Completed 404 Not Found in 3ms (ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 2.4ms)
+  
+ActiveRecord::RecordNotFound (Couldn't find Restaurant with 'id'="-1"):
+  
+app/controllers/api/v1/restaurants_controller.rb:72:in 'Api::V1::RestaurantsController#set_restaurant'
+test/controllers/api/v1/restaurants_controller_test.rb:33:in 'block in <class:RestaurantsControllerTest>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_returns_all_when_no_filters_are_provided
+----------------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants"[0m
+Completed 200 OK in 1ms (Views: 0.5ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_does_not_create_restaurant_when_required_fields_are_missing
+----------------------------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started POST "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#create as JSON
+  Parameters: {"restaurant" => {"cuisine" => "Italian"}}
+Completed 422 Unprocessable Content in 1ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mCACHE Restaurant Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_show_returns_a_restaurant
+------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/973268428" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#show as JSON
+  Parameters: {"id" => "973268428", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.2ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_updates_a_restaurant
+-------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started PATCH "/api/v1/restaurants/592200533" for 127.0.0.1 at 2025-12-08 18:41:19 +0000
+Processing by Api::V1::RestaurantsController#update as JSON
+  Parameters: {"restaurant" => {"cuisine" => "Brunch"}, "id" => "592200533"}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Update (0.3ms)[0m  [1m[33mUPDATE "restaurants" SET "cuisine" = $1, "updated_at" = $2 WHERE "restaurants"."id" = $3[0m  [["cuisine", "Brunch"], ["updated_at", "2025-12-08 18:41:19.600686"], ["id", 592200533]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 200 OK in 2ms (Views: 0.1ms | ActiveRecord: 0.6ms (2 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "restaurants" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mFixtures Load (0.4ms)[0m  [1m[31mDELETE FROM "restaurants";
+INSERT INTO "restaurants" ("id", "address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES (973268428, '36 Wexford Street, Dublin 2', '2025-12-08 18:41:29.488786', 'Burgers', 53.3369, -6.2666, 'Bunsen', '2025-12-08 18:41:29.488786', FALSE, 'https://bunsen.ie'), (104405334, '13-14 Camden Street Lower, Dublin 2', '2025-12-08 18:41:29.488786', 'Chinese', 53.336, -6.265, 'Hang Dai', '2025-12-08 18:41:29.488786', FALSE, 'https://hangdai.ie'), (592200533, '123 College Road, Dublin', '2025-12-08 18:41:29.488786', 'Cafe', 53.35, -6.26, 'My Local', '2025-12-08 18:41:29.488786', TRUE, 'https://example.test')[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "restaurants" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (4.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.6ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_catalog.pg_constraint SET convalidated=false WHERE conname = ''%1$I'' AND connamespace::regnamespace = ''%2$I''::regnamespace; ALTER TABLE %2$I.%3$I VALIDATE CONSTRAINT %1$I;',
+    constraint_name,
+    table_schema,
+    table_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------
+Api::V1::ConfigControllerTest: test_returns_maps_api_key_payload
+----------------------------------------------------------------
+Started GET "/api/v1/config/maps_key" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::ConfigController#maps_key as JSON
+  Parameters: {"config" => {}}
+Completed 200 OK in 15ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 11.2ms)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_returns_all_when_no_filters_are_provided
+----------------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.5ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"restaurant" => {}}
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants"[0m
+Completed 200 OK in 1ms (Views: 0.5ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_updates_a_restaurant
+-------------------------------------------------------------
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started PATCH "/api/v1/restaurants/592200533" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#update as JSON
+  Parameters: {"restaurant" => {"cuisine" => "Brunch"}, "id" => "592200533"}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Update (0.4ms)[0m  [1m[33mUPDATE "restaurants" SET "cuisine" = $1, "updated_at" = $2 WHERE "restaurants"."id" = $3[0m  [["cuisine", "Brunch"], ["updated_at", "2025-12-08 18:41:29.554204"], ["id", 592200533]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 200 OK in 2ms (Views: 0.2ms | ActiveRecord: 0.7ms (2 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_show_returns_404_for_missing_restaurant
+--------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/-1" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#show as JSON
+  Parameters: {"id" => "-1", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", -1], ["LIMIT", 1]]
+Completed 404 Not Found in 0ms (ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+  
+ActiveRecord::RecordNotFound (Couldn't find Restaurant with 'id'="-1"):
+  
+app/controllers/api/v1/restaurants_controller.rb:72:in 'Api::V1::RestaurantsController#set_restaurant'
+test/controllers/api/v1/restaurants_controller_test.rb:33:in 'block in <class:RestaurantsControllerTest>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_does_not_create_restaurant_when_required_fields_are_missing
+----------------------------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.3ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started POST "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#create as JSON
+  Parameters: {"restaurant" => {"cuisine" => "Italian"}}
+Completed 422 Unprocessable Content in 5ms (Views: 3.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 2.6ms)
+  [1m[36mCACHE Restaurant Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_show_returns_a_restaurant
+------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/973268428" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#show as JSON
+  Parameters: {"id" => "973268428", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+Completed 200 OK in 1ms (Views: 0.2ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_filters_by_keyword
+------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started POST "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"keyword" => "burger", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.4ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE (LOWER(cuisine) LIKE $1 OR LOWER(name) LIKE $2)[0m  [[nil, "%burger%"], [nil, "%burger%"]]
+Completed 200 OK in 2ms (Views: 1.0ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.6ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_creates_a_restaurant_with_valid_data
+-----------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started POST "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#create as JSON
+  Parameters: {"restaurant" => {"name" => "New Spot", "cuisine" => "Italian", "address" => "987 New Address, Dublin", "website" => "https://new.example", "user_added" => true}}
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.4ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "987 New Address, Dublin"], ["created_at", "2025-12-08 18:41:29.598274"], ["cuisine", "Italian"], ["latitude", 53.36], ["longitude", -6.25], ["name", "New Spot"], ["updated_at", "2025-12-08 18:41:29.598274"], ["user_added", true], ["website", "https://new.example"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 201 Created in 4ms (Views: 0.1ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 2.0ms)
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_does_not_update_with_invalid_data
+--------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started PATCH "/api/v1/restaurants/592200533" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#update as JSON
+  Parameters: {"restaurant" => {"name" => ""}, "id" => "592200533"}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Completed 422 Unprocessable Content in 4ms (Views: 0.7ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 3.1ms)
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_filters_by_coordinates_and_radius
+---------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started POST "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"latitude" => 53.35, "longitude" => -6.26, "radius" => 5, "restaurant" => {"latitude" => 53.35, "longitude" => -6.26}}
+Completed 200 OK in 0ms (Views: 0.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_index_returns_all_restaurants
+----------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#index as JSON
+  Parameters: {"restaurant" => {}}
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants"[0m
+Completed 200 OK in 1ms (Views: 0.5ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_destroys_a_restaurant
+--------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started DELETE "/api/v1/restaurants/104405334" for 127.0.0.1 at 2025-12-08 18:41:29 +0000
+Processing by Api::V1::RestaurantsController#destroy as JSON
+  Parameters: {"id" => "104405334", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Destroy (0.3ms)[0m  [1m[31mDELETE FROM "restaurants" WHERE "restaurants"."id" = $1[0m  [["id", 104405334]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 204 No Content in 1ms (ActiveRecord: 0.6ms (2 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------------
+RestaurantTest: test_scopes_separate_user-added_and_searched_restaurants
+------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", true], ["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", true], ["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", false], ["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", false], ["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------
+RestaurantTest: test_requires_name,_cuisine,_and_address
+--------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------
+RestaurantTest: test_updates_coordinates_when_address_changes
+-------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.3ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "111 Old Address, Dublin"], ["created_at", "2025-12-08 18:41:29.633859"], ["cuisine", "Test"], ["latitude", 53.32], ["longitude", -6.24], ["name", "Old Address"], ["updated_at", "2025-12-08 18:41:29.633859"], ["user_added", nil], ["website", nil]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Update (0.3ms)[0m  [1m[33mUPDATE "restaurants" SET "address" = $1, "latitude" = $2, "longitude" = $3, "updated_at" = $4 WHERE "restaurants"."id" = $5[0m  [["address", "987 New Address, Dublin"], ["latitude", 53.36], ["longitude", -6.25], ["updated_at", "2025-12-08 18:41:29.634857"], ["id", 973268430]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------
+RestaurantTest: test_geocodes_on_create_when_address_is_present
+---------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.4ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "987 New Address, Dublin"], ["created_at", "2025-12-08 18:41:29.637319"], ["cuisine", "Test"], ["latitude", 53.36], ["longitude", -6.25], ["name", "Geo Test"], ["updated_at", "2025-12-08 18:41:29.637319"], ["user_added", nil], ["website", nil]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------
+RestaurantTest: test_is_valid_with_all_required_attributes
+----------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "restaurants" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "restaurants";
+INSERT INTO "restaurants" ("id", "address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES (973268428, '36 Wexford Street, Dublin 2', '2025-12-08 18:42:20.664040', 'Burgers', 53.3369, -6.2666, 'Bunsen', '2025-12-08 18:42:20.664040', FALSE, 'https://bunsen.ie'), (104405334, '13-14 Camden Street Lower, Dublin 2', '2025-12-08 18:42:20.664040', 'Chinese', 53.336, -6.265, 'Hang Dai', '2025-12-08 18:42:20.664040', FALSE, 'https://hangdai.ie'), (592200533, '123 College Road, Dublin', '2025-12-08 18:42:20.664040', 'Cafe', 53.35, -6.26, 'My Local', '2025-12-08 18:42:20.664040', TRUE, 'https://example.test')[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "restaurants" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.8ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_catalog.pg_constraint SET convalidated=false WHERE conname = ''%1$I'' AND connamespace::regnamespace = ''%2$I''::regnamespace; ALTER TABLE %2$I.%3$I VALIDATE CONSTRAINT %1$I;',
+    constraint_name,
+    table_schema,
+    table_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------
+Api::V1::ConfigControllerTest: test_returns_maps_api_key_payload
+----------------------------------------------------------------
+Started GET "/api/v1/config/maps_key" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::ConfigController#maps_key as JSON
+  Parameters: {"config" => {}}
+Completed 200 OK in 15ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 11.9ms)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------
+RestaurantTest: test_geocodes_on_create_when_address_is_present
+---------------------------------------------------------------
+  [1m[36mRestaurant Load (0.6ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.3ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "987 New Address, Dublin"], ["created_at", "2025-12-08 18:42:20.721405"], ["cuisine", "Test"], ["latitude", 53.36], ["longitude", -6.25], ["name", "Geo Test"], ["updated_at", "2025-12-08 18:42:20.721405"], ["user_added", nil], ["website", nil]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------------
+RestaurantTest: test_scopes_separate_user-added_and_searched_restaurants
+------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", true], ["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", true], ["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", false], ["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", false], ["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------
+RestaurantTest: test_is_valid_with_all_required_attributes
+----------------------------------------------------------
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------
+RestaurantTest: test_requires_name,_cuisine,_and_address
+--------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------
+RestaurantTest: test_updates_coordinates_when_address_changes
+-------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.3ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "111 Old Address, Dublin"], ["created_at", "2025-12-08 18:42:20.732598"], ["cuisine", "Test"], ["latitude", 53.32], ["longitude", -6.24], ["name", "Old Address"], ["updated_at", "2025-12-08 18:42:20.732598"], ["user_added", nil], ["website", nil]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Update (0.3ms)[0m  [1m[33mUPDATE "restaurants" SET "address" = $1, "latitude" = $2, "longitude" = $3, "updated_at" = $4 WHERE "restaurants"."id" = $5[0m  [["address", "987 New Address, Dublin"], ["latitude", 53.36], ["longitude", -6.25], ["updated_at", "2025-12-08 18:42:20.733500"], ["id", 973268430]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_filters_by_keyword
+------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started POST "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"keyword" => "burger", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.5ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE (LOWER(cuisine) LIKE $1 OR LOWER(name) LIKE $2)[0m  [[nil, "%burger%"], [nil, "%burger%"]]
+Completed 200 OK in 2ms (Views: 0.8ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.3ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_creates_a_restaurant_with_valid_data
+-----------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started POST "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#create as JSON
+  Parameters: {"restaurant" => {"name" => "New Spot", "cuisine" => "Italian", "address" => "987 New Address, Dublin", "website" => "https://new.example", "user_added" => true}}
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.3ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "987 New Address, Dublin"], ["created_at", "2025-12-08 18:42:20.742856"], ["cuisine", "Italian"], ["latitude", 53.36], ["longitude", -6.25], ["name", "New Spot"], ["updated_at", "2025-12-08 18:42:20.742856"], ["user_added", true], ["website", "https://new.example"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 201 Created in 1ms (Views: 0.1ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_does_not_update_with_invalid_data
+--------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started PATCH "/api/v1/restaurants/592200533" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#update as JSON
+  Parameters: {"restaurant" => {"name" => ""}, "id" => "592200533"}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Completed 422 Unprocessable Content in 3ms (Views: 1.9ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 1.7ms)
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_show_returns_a_restaurant
+------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/973268428" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#show as JSON
+  Parameters: {"id" => "973268428", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+Completed 200 OK in 1ms (Views: 0.7ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.6ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_filters_by_coordinates_and_radius
+---------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started POST "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"latitude" => 53.35, "longitude" => -6.26, "radius" => 5, "restaurant" => {"latitude" => 53.35, "longitude" => -6.26}}
+  [1m[36mRestaurant Load (1.3ms)[0m  [1m[34mSELECT restaurants.*, 6371.0 * 2 * ASIN(SQRT(POWER(SIN((53.35 - restaurants.latitude) * PI() / 180 / 2), 2) + COS(53.35 * PI() / 180) * COS(restaurants.latitude * PI() / 180) * POWER(SIN((-6.26 - restaurants.longitude) * PI() / 180 / 2), 2))) AS distance, MOD(CAST((ATAN2( ((restaurants.longitude - -6.26) / 57.2957795), ((restaurants.latitude - 53.35) / 57.2957795)) * 57.2957795) + 360 AS decimal), 360) AS bearing FROM "restaurants" WHERE (restaurants.latitude BETWEEN 53.305033919704066 AND 53.39496608029594 AND restaurants.longitude BETWEEN -6.335329500938503 AND -6.184670499061497 AND (6371.0 * 2 * ASIN(SQRT(POWER(SIN((53.35 - restaurants.latitude) * PI() / 180 / 2), 2) + COS(53.35 * PI() / 180) * COS(restaurants.latitude * PI() / 180) * POWER(SIN((-6.26 - restaurants.longitude) * PI() / 180 / 2), 2)))) BETWEEN $1 AND $2) ORDER BY distance ASC[0m  [[nil, 0.0], [nil, 5]]
+Completed 200 OK in 5ms (Views: 1.3ms | ActiveRecord: 1.3ms (1 query, 0 cached) | GC: 2.4ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_returns_all_when_no_filters_are_provided
+----------------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"restaurant" => {}}
+  [1m[36mRestaurant Load (0.3ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants"[0m
+Completed 200 OK in 2ms (Views: 1.6ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 1.2ms)
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_updates_a_restaurant
+-------------------------------------------------------------
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started PATCH "/api/v1/restaurants/592200533" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#update as JSON
+  Parameters: {"restaurant" => {"cuisine" => "Brunch"}, "id" => "592200533"}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Update (0.3ms)[0m  [1m[33mUPDATE "restaurants" SET "cuisine" = $1, "updated_at" = $2 WHERE "restaurants"."id" = $3[0m  [["cuisine", "Brunch"], ["updated_at", "2025-12-08 18:42:20.783408"], ["id", 592200533]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 200 OK in 3ms (Views: 0.7ms | ActiveRecord: 0.7ms (2 queries, 0 cached) | GC: 1.2ms)
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_show_returns_404_for_missing_restaurant
+--------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/-1" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#show as JSON
+  Parameters: {"id" => "-1", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", -1], ["LIMIT", 1]]
+Completed 404 Not Found in 2ms (ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 1.3ms)
+  
+ActiveRecord::RecordNotFound (Couldn't find Restaurant with 'id'="-1"):
+  
+app/controllers/api/v1/restaurants_controller.rb:72:in 'Api::V1::RestaurantsController#set_restaurant'
+test/controllers/api/v1/restaurants_controller_test.rb:33:in 'block in <class:RestaurantsControllerTest>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_destroys_a_restaurant
+--------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started DELETE "/api/v1/restaurants/104405334" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#destroy as JSON
+  Parameters: {"id" => "104405334", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Destroy (0.3ms)[0m  [1m[31mDELETE FROM "restaurants" WHERE "restaurants"."id" = $1[0m  [["id", 104405334]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 204 No Content in 1ms (ActiveRecord: 0.6ms (2 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_does_not_create_restaurant_when_required_fields_are_missing
+----------------------------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started POST "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#create as JSON
+  Parameters: {"restaurant" => {"cuisine" => "Italian"}}
+Completed 422 Unprocessable Content in 1ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mCACHE Restaurant Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_index_returns_all_restaurants
+----------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:42:20 +0000
+Processing by Api::V1::RestaurantsController#index as JSON
+  Parameters: {"restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants"[0m
+Completed 200 OK in 0ms (Views: 0.3ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "restaurants" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "restaurants";
+INSERT INTO "restaurants" ("id", "address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES (973268428, '36 Wexford Street, Dublin 2', '2025-12-08 18:42:33.692102', 'Burgers', 53.3369, -6.2666, 'Bunsen', '2025-12-08 18:42:33.692102', FALSE, 'https://bunsen.ie'), (104405334, '13-14 Camden Street Lower, Dublin 2', '2025-12-08 18:42:33.692102', 'Chinese', 53.336, -6.265, 'Hang Dai', '2025-12-08 18:42:33.692102', FALSE, 'https://hangdai.ie'), (592200533, '123 College Road, Dublin', '2025-12-08 18:42:33.692102', 'Cafe', 53.35, -6.26, 'My Local', '2025-12-08 18:42:33.692102', TRUE, 'https://example.test')[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "restaurants" ENABLE TRIGGER ALL;ALTER TABLE "schema_migrations" ENABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" ENABLE TRIGGER ALL[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.6ms)[0m  [1m[35mdo $$
+  declare r record;
+BEGIN
+FOR r IN (
+  SELECT FORMAT(
+    'UPDATE pg_catalog.pg_constraint SET convalidated=false WHERE conname = ''%1$I'' AND connamespace::regnamespace = ''%2$I''::regnamespace; ALTER TABLE %2$I.%3$I VALIDATE CONSTRAINT %1$I;',
+    constraint_name,
+    table_schema,
+    table_name
+  ) AS constraint_check
+  FROM information_schema.table_constraints WHERE constraint_type = 'FOREIGN KEY'
+)
+  LOOP
+    EXECUTE (r.constraint_check);
+  END LOOP;
+END;
+$$;
+[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-----------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_creates_a_restaurant_with_valid_data
+-----------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.5ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started POST "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#create as JSON
+  Parameters: {"restaurant" => {"name" => "New Spot", "cuisine" => "Italian", "address" => "987 New Address, Dublin", "website" => "https://new.example", "user_added" => true}}
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.5ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "987 New Address, Dublin"], ["created_at", "2025-12-08 18:42:33.745169"], ["cuisine", "Italian"], ["latitude", 53.36], ["longitude", -6.25], ["name", "New Spot"], ["updated_at", "2025-12-08 18:42:33.745169"], ["user_added", true], ["website", "https://new.example"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 201 Created in 5ms (Views: 0.2ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.5ms)
+  [1m[36mRestaurant Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_does_not_create_restaurant_when_required_fields_are_missing
+----------------------------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started POST "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#create as JSON
+  Parameters: {"restaurant" => {"cuisine" => "Italian"}}
+Completed 422 Unprocessable Content in 2ms (Views: 1.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.4ms)
+  [1m[36mCACHE Restaurant Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_show_returns_a_restaurant
+------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/973268428" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#show as JSON
+  Parameters: {"id" => "973268428", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_returns_all_when_no_filters_are_provided
+----------------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"restaurant" => {}}
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants"[0m
+Completed 200 OK in 1ms (Views: 0.6ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.3ms)
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_destroys_a_restaurant
+--------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+Started DELETE "/api/v1/restaurants/104405334" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#destroy as JSON
+  Parameters: {"id" => "104405334", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Destroy (0.3ms)[0m  [1m[31mDELETE FROM "restaurants" WHERE "restaurants"."id" = $1[0m  [["id", 104405334]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 204 No Content in 1ms (ActiveRecord: 0.5ms (2 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_updates_a_restaurant
+-------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started PATCH "/api/v1/restaurants/592200533" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#update as JSON
+  Parameters: {"restaurant" => {"cuisine" => "Brunch"}, "id" => "592200533"}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Update (0.5ms)[0m  [1m[33mUPDATE "restaurants" SET "cuisine" = $1, "updated_at" = $2 WHERE "restaurants"."id" = $3[0m  [["cuisine", "Brunch"], ["updated_at", "2025-12-08 18:42:33.767388"], ["id", 592200533]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+Completed 200 OK in 1ms (Views: 0.1ms | ActiveRecord: 0.7ms (2 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_does_not_update_with_invalid_data
+--------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started PATCH "/api/v1/restaurants/592200533" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#update as JSON
+  Parameters: {"restaurant" => {"name" => ""}, "id" => "592200533"}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Completed 422 Unprocessable Content in 1ms (Views: 0.2ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_filters_by_keyword
+------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started POST "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"keyword" => "burger", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.4ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE (LOWER(cuisine) LIKE $1 OR LOWER(name) LIKE $2)[0m  [[nil, "%burger%"], [nil, "%burger%"]]
+Completed 200 OK in 1ms (Views: 0.3ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_show_returns_404_for_missing_restaurant
+--------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants/-1" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#show as JSON
+  Parameters: {"id" => "-1", "restaurant" => {}}
+  [1m[36mRestaurant Load (0.2ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", -1], ["LIMIT", 1]]
+Completed 404 Not Found in 2ms (ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 1.3ms)
+  
+ActiveRecord::RecordNotFound (Couldn't find Restaurant with 'id'="-1"):
+  
+app/controllers/api/v1/restaurants_controller.rb:72:in 'Api::V1::RestaurantsController#set_restaurant'
+test/controllers/api/v1/restaurants_controller_test.rb:33:in 'block in <class:RestaurantsControllerTest>'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_search_filters_by_coordinates_and_radius
+---------------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started POST "/api/v1/restaurants/search" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#search as JSON
+  Parameters: {"latitude" => 53.35, "longitude" => -6.26, "radius" => 5, "restaurant" => {"latitude" => 53.35, "longitude" => -6.26}}
+  [1m[36mRestaurant Load (1.0ms)[0m  [1m[34mSELECT restaurants.*, 6371.0 * 2 * ASIN(SQRT(POWER(SIN((53.35 - restaurants.latitude) * PI() / 180 / 2), 2) + COS(53.35 * PI() / 180) * COS(restaurants.latitude * PI() / 180) * POWER(SIN((-6.26 - restaurants.longitude) * PI() / 180 / 2), 2))) AS distance, MOD(CAST((ATAN2( ((restaurants.longitude - -6.26) / 57.2957795), ((restaurants.latitude - 53.35) / 57.2957795)) * 57.2957795) + 360 AS decimal), 360) AS bearing FROM "restaurants" WHERE (restaurants.latitude BETWEEN 53.305033919704066 AND 53.39496608029594 AND restaurants.longitude BETWEEN -6.335329500938503 AND -6.184670499061497 AND (6371.0 * 2 * ASIN(SQRT(POWER(SIN((53.35 - restaurants.latitude) * PI() / 180 / 2), 2) + COS(53.35 * PI() / 180) * COS(restaurants.latitude * PI() / 180) * POWER(SIN((-6.26 - restaurants.longitude) * PI() / 180 / 2), 2)))) BETWEEN $1 AND $2) ORDER BY distance ASC[0m  [[nil, 0.0], [nil, 5]]
+Completed 200 OK in 4ms (Views: 2.4ms | ActiveRecord: 1.0ms (1 query, 0 cached) | GC: 1.6ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------------
+Api::V1::RestaurantsControllerTest: test_index_returns_all_restaurants
+----------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 104405334], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.7ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+Started GET "/api/v1/restaurants" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::RestaurantsController#index as JSON
+  Parameters: {"restaurant" => {}}
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants"[0m
+Completed 200 OK in 3ms (Views: 2.9ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 2.4ms)
+  [1m[36mRestaurant Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "restaurants"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------------
+Api::V1::ConfigControllerTest: test_returns_maps_api_key_payload
+----------------------------------------------------------------
+Started GET "/api/v1/config/maps_key" for 127.0.0.1 at 2025-12-08 18:42:33 +0000
+Processing by Api::V1::ConfigController#maps_key as JSON
+  Parameters: {"config" => {}}
+Completed 200 OK in 0ms (Views: 0.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+------------------------------------------------------------------------
+RestaurantTest: test_scopes_separate_user-added_and_searched_restaurants
+------------------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", true], ["id", 592200533], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", true], ["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", false], ["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "restaurants" WHERE "restaurants"."user_added" = $1 AND "restaurants"."id" = $2 LIMIT $3[0m  [["user_added", false], ["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+--------------------------------------------------------
+RestaurantTest: test_requires_name,_cuisine,_and_address
+--------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+---------------------------------------------------------------
+RestaurantTest: test_geocodes_on_create_when_address_is_present
+---------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.3ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "987 New Address, Dublin"], ["created_at", "2025-12-08 18:42:33.828150"], ["cuisine", "Test"], ["latitude", 53.36], ["longitude", -6.25], ["name", "Geo Test"], ["updated_at", "2025-12-08 18:42:33.828150"], ["user_added", nil], ["website", nil]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+----------------------------------------------------------
+RestaurantTest: test_is_valid_with_all_required_attributes
+----------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+-------------------------------------------------------------
+RestaurantTest: test_updates_coordinates_when_address_changes
+-------------------------------------------------------------
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 973268428], ["LIMIT", 1]]
+  [1m[36mRestaurant Load (0.1ms)[0m  [1m[34mSELECT "restaurants".* FROM "restaurants" WHERE "restaurants"."id" = $1 LIMIT $2[0m  [["id", 592200533], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Create (0.3ms)[0m  [1m[32mINSERT INTO "restaurants" ("address", "created_at", "cuisine", "latitude", "longitude", "name", "updated_at", "user_added", "website") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["address", "111 Old Address, Dublin"], ["created_at", "2025-12-08 18:42:33.832445"], ["cuisine", "Test"], ["latitude", 53.32], ["longitude", -6.24], ["name", "Old Address"], ["updated_at", "2025-12-08 18:42:33.832445"], ["user_added", nil], ["website", nil]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mRestaurant Update (0.3ms)[0m  [1m[33mUPDATE "restaurants" SET "address" = $1, "latitude" = $2, "longitude" = $3, "updated_at" = $4 WHERE "restaurants"."id" = $5[0m  [["address", "987 New Address, Dublin"], ["latitude", 53.36], ["longitude", -6.25], ["updated_at", "2025-12-08 18:42:33.833302"], ["id", 973268431]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m

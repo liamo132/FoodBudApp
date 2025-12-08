@@ -4,6 +4,7 @@ Rails.application.routes.draw do
       resources :restaurants do
         collection do
           get 'search'
+          post 'search' # allow POST for search requests from tests/clients
         end
       end
       
