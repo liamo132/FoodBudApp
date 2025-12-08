@@ -43,27 +43,28 @@ module Api
       # GET /api/v1/restaurants/search
       def search
         @restaurants = Restaurant.all
-        
+
         # Filter by keyword
         if params[:keyword].present?
           keyword = params[:keyword].downcase
           @restaurants = @restaurants.where(
-            "LOWER(cuisine) LIKE ? OR LOWER(name) LIKE ?", 
-            "%#{keyword}%", 
+            "LOWER(cuisine) LIKE ? OR LOWER(name) LIKE ?",
+            "%#{keyword}%",
             "%#{keyword}%"
           )
         end
-        
-        # Filter by radius
+
+        # Filter by radius (results come back sorted by distance from Geocoder)
         if params[:latitude].present? && params[:longitude].present?
           latitude = params[:latitude].to_f
           longitude = params[:longitude].to_f
-          radius = params[:radius] || 25
-          
+          radius = (params[:radius] || 25).to_f
+
           @restaurants = @restaurants.near([latitude, longitude], radius, units: :km)
         end
-        
-        render json: @restaurants
+
+        # Include distance in response so the frontend can show/sort by proximity
+        render json: @restaurants.as_json(methods: :distance)
       end
 
       private
